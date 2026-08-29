@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luyện Đề</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --bg:#f5f1e6;
+    --surface:#ffffff;
+    --surface-2:#ece5d3;
+    --ink:#20242f;
+    --muted:#6c7080;
+    --border:#ddd3ba;
+    --brand:#2d5f6b;
+    --brand-ink:#ffffff;
+    --brand-soft:#dbe8e6;
+    --accent:#b9720f;
+    --good:#2f8f5b;
+    --good-soft:#dcefe2;
+    --bad:#c1443f;
+    --bad-soft:#f7dedd;
+    --radius:12px;
+    --shadow:0 1px 2px rgba(32,36,47,.06), 0 6px 20px -8px rgba(32,36,47,.15);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#12151c; --surface:#181c25; --surface-2:#20242f;
+      --ink:#e9e6dc; --muted:#9298ab; --border:#2c3140;
+      --brand:#7bb9c2; --brand-ink:#0c1014; --brand-soft:#1c3236;
+      --accent:#e2a548; --good:#5fc48f; --good-soft:#153224;
+      --bad:#e1746f; --bad-soft:#3a1f1e;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 24px -8px rgba(0,0,0,.5);
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{background:var(--bg);color:var(--ink);font-family:"Source Sans 3",system-ui,sans-serif;}
+  h1,h2,h3,.display{font-family:"Fraunces",Georgia,serif;text-wrap:balance;}
+  .mono, .tabular{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;cursor:pointer;}
+  a{color:var(--brand);}
+
+  #app{display:flex;min-height:100vh;}
+  .sidebar{
+    width:230px;flex:none;background:var(--surface);border-right:1px solid var(--border);
+    padding:22px 16px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:2px 8px 20px;}
+  .brand .mark{width:34px;height:34px;border-radius:9px;background:var(--brand);color:var(--brand-ink);
+    display:flex;align-items:center;justify-content:center;font-family:"Fraunces",serif;font-weight:700;font-size:17px;flex:none;}
+  .brand .name{font-family:"Fraunces",serif;font-weight:600;font-size:18px;line-height:1.1;}
+  .brand .name small{display:block;font-family:"Source Sans 3",sans-serif;font-weight:400;font-size:11.5px;color:var(--muted);margin-top:2px;letter-spacing:.02em;}
+  .navitem{
+    display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;border:none;background:transparent;
+    color:var(--muted);font-size:14.5px;font-weight:600;text-align:left;width:100%;transition:background .12s,color .12s;
+  }
+  .navitem:hover{background:var(--surface-2);color:var(--ink);}
+  .navitem.active{background:var(--brand-soft);color:var(--brand);}
+  .navitem .ic{width:18px;text-align:center;flex:none;}
+  .sidebar-foot{margin-top:auto;padding:10px 8px 2px;border-top:1px solid var(--border);}
+  .studentfield label{display:block;font-size:11px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin:10px 0 5px;}
+  .studentfield input{width:100%;border:1px solid var(--border);background:var(--bg);color:var(--ink);border-radius:8px;padding:7px 9px;font-size:14px;font-family:inherit;}
+  .storenote{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px;}
+
+  main{flex:1;min-width:0;padding:36px 40px 64px;max-width:980px;}
+  .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 6px;}
+  .pagehead{margin-bottom:28px;}
+  .pagehead h1{font-size:28px;margin:0 0 6px;font-weight:600;}
+  .pagehead p{margin:0;color:var(--muted);font-size:15px;max-width:62ch;line-height:1.55;}
+
+  .subject-block{margin-bottom:30px;}
+  .subject-block h2{font-size:19px;font-weight:600;margin:0 0 12px;display:flex;align-items:center;gap:9px;}
+  .subject-block h2 .tag{font-family:"IBM Plex Mono",monospace;font-size:11px;background:var(--surface-2);color:var(--muted);
+    padding:2px 8px;border-radius:999px;font-weight:500;}
+  .cardgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;gap:10px;}
+  .card h3{font-size:16px;margin:0;font-weight:600;line-height:1.3;}
+  .card .meta{font-size:12.5px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;}
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;}
+  .badge.good{background:var(--good-soft);color:var(--good);}
+  .badge.bad{background:var(--bad-soft);color:var(--bad);}
+  .badge.neutral{background:var(--surface-2);color:var(--muted);}
+  .btn{border-radius:9px;padding:9px 15px;font-size:14px;font-weight:600;border:1px solid transparent;transition:filter .12s, background .12s;}
+  .btn.primary{background:var(--brand);color:var(--brand-ink);}
+  .btn.primary:hover{filter:brightness(1.08);}
+  .btn.ghost{background:transparent;color:var(--ink);border-color:var(--border);}
+  .btn.ghost:hover{background:var(--surface-2);}
+  .btn.danger{background:transparent;color:var(--bad);border-color:var(--bad-soft);}
+  .btn.danger:hover{background:var(--bad-soft);}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .btn.sm{padding:6px 11px;font-size:12.5px;border-radius:7px;}
+  .cardfoot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+
+  .empty{border:1.5px dashed var(--border);border-radius:var(--radius);padding:34px 20px;text-align:center;color:var(--muted);}
+  .empty .display{color:var(--ink);font-size:18px;margin-bottom:6px;}
+
+  .quizhead{position:sticky;top:0;background:var(--bg);padding:10px 0 16px;z-index:5;}
+  .progress-row{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
+  .progress-track{flex:1;height:7px;border-radius:999px;background:var(--surface-2);overflow:hidden;}
+  .progress-fill{height:100%;background:var(--brand);border-radius:999px;transition:width .2s;}
+  .progress-label{font-size:12.5px;color:var(--muted);white-space:nowrap;}
+  .qcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:20px 22px;margin-bottom:14px;}
+  .qcard .qnum{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--brand);font-weight:600;margin-bottom:6px;}
+  .qcard .qtext{font-size:16px;line-height:1.5;margin:0 0 14px;font-weight:600;}
+  .opt{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--border);border-radius:9px;padding:10px 12px;margin-bottom:8px;
+    cursor:pointer;transition:border-color .12s,background .12s;}
+  .opt:hover{border-color:var(--brand);}
+  .opt input{margin-top:3px;accent-color:var(--brand);flex:none;}
+  .opt .lab{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);font-weight:600;flex:none;width:16px;}
+  .opt.selected{border-color:var(--brand);background:var(--brand-soft);}
+  .opt.correct{border-color:var(--good);background:var(--good-soft);}
+  .opt.incorrect{border-color:var(--bad);background:var(--bad-soft);}
+  .explain{margin-top:10px;padding:10px 12px;border-radius:8px;background:var(--surface-2);font-size:13.5px;color:var(--muted);line-height:1.5;}
+  .explain b{color:var(--ink);}
+  .quizfoot{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+
+  .scoreboard{display:flex;align-items:center;gap:22px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:22px 26px;box-shadow:var(--shadow);margin-bottom:22px;}
+  .scorering{width:84px;height:84px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+    font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:20px;border:6px solid var(--surface-2);}
+  .scoreboard .sd h2{margin:0 0 4px;font-size:20px;}
+  .scoreboard .sd p{margin:0;color:var(--muted);font-size:14px;}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th{text-align:left;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600;
+    padding:0 12px 8px;border-bottom:1px solid var(--border);}
+  td{padding:11px 12px;border-bottom:1px solid var(--border);}
+  tr:last-child td{border-bottom:none;}
+  .histbar-wrap{display:flex;align-items:center;gap:8px;}
+  .histbar{width:70px;height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden;flex:none;}
+  .histbar > i{display:block;height:100%;background:var(--brand);}
+
+  .tabs{display:flex;gap:6px;margin-bottom:20px;border-bottom:1px solid var(--border);}
+  .tab{padding:9px 4px;margin-right:16px;font-size:14px;font-weight:600;color:var(--muted);border:none;background:none;border-bottom:2px solid transparent;}
+  .tab.active{color:var(--brand);border-bottom-color:var(--brand);}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:20px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:5px;}
+  .field input[type=text], .field select, .field textarea{
+    width:100%;border:1px solid var(--border);background:var(--bg);color:var(--ink);border-radius:8px;padding:9px 11px;
+    font-size:14px;font-family:inherit;
+  }
+  .field textarea{font-family:"IBM Plex Mono",monospace;font-size:12.5px;min-height:160px;resize:vertical;line-height:1.5;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .qbuild{border:1px solid var(--border);border-radius:9px;padding:14px;margin-bottom:12px;background:var(--bg);}
+  .qbuild .qbhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .qbuild .qbhead span{font-size:12.5px;font-weight:600;color:var(--muted);font-family:"IBM Plex Mono",monospace;}
+  .optrow{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .optrow input[type=text]{flex:1;}
+  .hint{font-size:12.5px;color:var(--muted);line-height:1.6;margin:0 0 14px;}
+  .hint code{background:var(--surface-2);padding:1px 5px;border-radius:4px;font-size:11.5px;}
+  .setlist-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);}
+  .setlist-row:last-child{border-bottom:none;}
+  .setlist-row .sinfo{font-size:14px;}
+  .setlist-row .sinfo small{display:block;color:var(--muted);font-size:12px;margin-top:2px;}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);
+    padding:10px 18px;border-radius:9px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow);z-index:50;opacity:0;
+    pointer-events:none;transition:opacity .2s, transform .2s;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+  @media (max-width:720px){
+    #app{flex-direction:column;}
+    .sidebar{width:100%;height:auto;position:relative;flex-direction:row;flex-wrap:wrap;align-items:center;}
+    .brand{padding:2px 8px;}
+    .sidebar-foot{margin-top:0;border-top:none;}
+    main{padding:22px 16px 48px;}
+    .row2{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORE_KEY_SETS = "luyende_sets_v1";
+  var STORE_KEY_ATTEMPTS = "luyende_attempts_v1";
+
+  var state = {
+    view: "home",
+    sets: [],
+    attempts: [],
+    student: (function(){ try{ return localStorage.getItem("luyende_student") || ""; }catch(e){ return ""; } })(),
+    quiz: null,
+    result: null,
+    adminTab: "list",
+    manualDraft: null
+  };
+
+  function escapeHtml(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+  function fmtDate(iso){
+    try{
+      var d = new Date(iso);
+      return d.toLocaleDateString("vi-VN",{day:"2-digit",month:"2-digit",year:"numeric"}) + " " +
+             d.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
+    }catch(e){ return iso; }
+  }
+  function toast(msg){
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toast._h);
+    toast._h = setTimeout(function(){ t.classList.remove("show"); }, 2200);
+  }
+
+  // ---------- local storage backed "db" ----------
+  function loadSets(){
+    try{ return JSON.parse(localStorage.getItem(STORE_KEY_SETS) || "[]"); }catch(e){ return []; }
+  }
+  function saveSets(sets){
+    try{ localStorage.setItem(STORE_KEY_SETS, JSON.stringify(sets)); }catch(e){ toast("Không lưu được (bộ nhớ trình duyệt đầy hoặc bị chặn)."); }
+  }
+  function loadAttempts(){
+    try{ return JSON.parse(localStorage.getItem(STORE_KEY_ATTEMPTS) || "[]"); }catch(e){ return []; }
+  }
+  function saveAttempts(atts){
+    try{ localStorage.setItem(STORE_KEY_ATTEMPTS, JSON.stringify(atts)); }catch(e){ toast("Không lưu được lịch sử."); }
+  }
+
+  var SEED_SETS = [
+    {
+      subject: "Tiếng Anh",
+      title: "Ngữ pháp cơ bản — Thì động từ",
+      questions: [
+        {text:"Choose the correct sentence.", options:["She go to school every day.","She goes to school every day.","She going to school every day.","She gone to school every day."], correct:1, explanation:"Chủ ngữ số ít (she) ở thì hiện tại đơn cần động từ thêm -s/-es: goes."},
+        {text:"I ___ my homework when the phone rang.", options:["do","did","was doing","have done"], correct:2, explanation:"Hành động đang xảy ra thì bị gián đoạn → quá khứ tiếp diễn: was doing."},
+        {text:"By next year, she ___ her degree.", options:["will complete","will have completed","completes","is completing"], correct:1, explanation:"Hành động hoàn thành trước một mốc trong tương lai → tương lai hoàn thành: will have completed."},
+        {text:"Choose the correct passive form: 'They built this house in 1990.'", options:["This house built in 1990.","This house was built in 1990.","This house is built in 1990.","This house has built in 1990."], correct:1, explanation:"Câu chủ động quá khứ đơn → bị động: was/were + P2 → was built."},
+        {text:"If I ___ more time, I would learn French.", options:["have","had","will have","has"], correct:1, explanation:"Câu điều kiện loại 2: If + S + V2/ed, S + would + V."},
+        {text:"She has lived here ___ 2015.", options:["for","since","from","during"], correct:1, explanation:"'Since' dùng với một mốc thời gian cụ thể."},
+        {text:"Choose the word that best completes: He is interested ___ learning Japanese.", options:["on","at","in","with"], correct:2, explanation:"Cụm cố định: be interested in something."},
+        {text:"Which sentence uses the comparative correctly?", options:["This book is more interesting than that one.","This book is most interesting than that one.","This book is interesting more than that one.","This book is much interesting than that one."], correct:0, explanation:"So sánh hơn với tính từ dài: more + adj + than."}
+      ]
+    },
+    {
+      subject: "Toán",
+      title: "Đại số — Phương trình & Hàm số (lớp 10)",
+      questions: [
+        {text:"Nghiệm của phương trình 2x − 6 = 0 là:", options:["x = 2","x = 3","x = −3","x = 6"], correct:1, explanation:"2x = 6 ⇒ x = 3."},
+        {text:"Tập xác định của hàm số y = 1/(x−2) là:", options:["ℝ","ℝ \\ {2}","ℝ \\ {0}","[2; +∞)"], correct:1, explanation:"Mẫu số khác 0: x ≠ 2."},
+        {text:"Parabol y = x² − 4x + 3 có đỉnh tại:", options:["(2; −1)","(−2; −1)","(2; 1)","(4; 3)"], correct:0, explanation:"x = −b/2a = 2; y = 4−8+3 = −1."},
+        {text:"Phương trình x² − 5x + 6 = 0 có nghiệm:", options:["x = 1, x = 6","x = 2, x = 3","x = −2, x = −3","Vô nghiệm"], correct:1, explanation:"Δ=1; x=(5±1)/2 ⇒ 2 hoặc 3."},
+        {text:"Hệ bất phương trình x > 1 và x < 5 có tập nghiệm:", options:["(1; 5)","[1; 5]","(−∞; 5)","(1; +∞)"], correct:0, explanation:"Giao của (1;+∞) và (−∞;5) là (1;5)."},
+        {text:"Cho hàm số bậc nhất y = −2x + 1. Hàm số này:", options:["Đồng biến trên ℝ","Nghịch biến trên ℝ","Không đổi","Chỉ xác định khi x > 0"], correct:1, explanation:"a = −2 < 0 nên nghịch biến."},
+        {text:"Tổng hai nghiệm của phương trình x² − 7x + 10 = 0 (theo Vi-ét) là:", options:["10","−7","7","5"], correct:2, explanation:"x₁+x₂ = −b/a = 7."}
+      ]
+    },
+    {
+      subject: "TOEIC",
+      title: "TOEIC Practice — Vocabulary & Grammar (Part 5 style)",
+      questions: [
+        {text:"The manager asked all employees to ___ the new safety guidelines.", options:["comply","follow","adhere","obey"], correct:1, explanation:"'Follow guidelines' là cụm tự nhiên nhất trong văn phong công sở."},
+        {text:"Sales figures have increased ___ over the past quarter.", options:["significant","significantly","significance","signify"], correct:1, explanation:"Cần trạng từ bổ nghĩa cho động từ 'increased'."},
+        {text:"Please submit your report ___ the end of the day.", options:["until","by","since","from"], correct:1, explanation:"'By' diễn tả hạn chót (deadline)."},
+        {text:"The conference has been postponed ___ further notice.", options:["until","for","at","in"], correct:0, explanation:"Cụm cố định: postponed until further notice."},
+        {text:"All applicants must have ___ experience in customer service.", options:["previous","previously","prevent","preview"], correct:0, explanation:"Cần tính từ bổ nghĩa cho danh từ 'experience'."},
+        {text:"The new policy will take effect ___ January 1st.", options:["on","in","at","since"], correct:0, explanation:"Dùng 'on' với ngày cụ thể."},
+        {text:"Choose the best synonym for 'reimburse' in a business context.", options:["Ignore","Repay","Delay","Approve"], correct:1, explanation:"'Reimburse' nghĩa là hoàn trả chi phí."}
+      ]
+    }
+  ];
+
+  function ensureSeed(){
+    var sets = loadSets();
+    if(sets.length === 0){
+      sets = SEED_SETS.map(function(s){
+        return { id: uid(), subject: s.subject, title: s.title, questions: s.questions, createdAt: new Date().toISOString(), seed: true };
+      });
+      saveSets(sets);
+    }
+    return sets;
+  }
+
+  function refreshFromStore(){
+    state.sets = loadSets().sort(function(a,b){ return (a.subject||"").localeCompare(b.subject||"") || (a.title||"").localeCompare(b.title||""); });
+    state.attempts = loadAttempts().sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+  }
+
+  function bestScoreFor(setId){
+    var best = null;
+    state.attempts.forEach(function(a){
+      if(a.setId === setId){
+        var pct = a.total ? (a.score/a.total) : 0;
+        if(best === null || pct > best) best = pct;
+      }
+    });
+    return best;
+  }
+  function subjectsGrouped(){
+    var map = {};
+    state.sets.forEach(function(s){
+      var key = s.subject || "Khác";
+      if(!map[key]) map[key] = [];
+      map[key].push(s);
+    });
+    return map;
+  }
+
+  function setStudent(name){
+    state.student = name;
+    try{ localStorage.setItem("luyende_student", name); }catch(e){}
+  }
+  function goto(view){ state.view = view; render(); }
+
+  function startQuiz(setId){
+    state.quiz = { setId: setId, answers: {} };
+    state.result = null;
+    state.view = "quiz";
+    render();
+    window.scrollTo(0,0);
+  }
+  function selectAnswer(qIndex, optIndex){
+    state.quiz.answers[qIndex] = optIndex;
+    render();
+  }
+  function submitQuiz(){
+    var set = state.sets.find(function(s){ return s.id === state.quiz.setId; });
+    if(!set) return;
+    var total = set.questions.length;
+    var score = 0;
+    set.questions.forEach(function(q, i){
+      if(state.quiz.answers[i] === q.correct) score++;
+    });
+    var attempt = {
+      id: uid(), setId: set.id, subject: set.subject, title: set.title,
+      student: state.student || "Học sinh", score: score, total: total,
+      date: new Date().toISOString(), answers: state.quiz.answers
+    };
+    state.result = { set: set, answers: state.quiz.answers, score: score, total: total };
+    state.view = "result";
+    var atts = loadAttempts();
+    atts.push(attempt);
+    saveAttempts(atts);
+    refreshFromStore();
+    render();
+    window.scrollTo(0,0);
+  }
+  function deleteSet(id){
+    if(!confirm("Xoá đề này? Các lượt làm bài liên quan vẫn được giữ trong lịch sử.")) return;
+    var sets = loadSets().filter(function(s){ return s.id !== id; });
+    saveSets(sets);
+    refreshFromStore();
+    toast("Đã xoá đề.");
+    render();
+  }
+
+  function parseJsonQuestions(raw){
+    var data;
+    try{ data = JSON.parse(raw); }catch(e){ throw new Error("JSON không hợp lệ: " + e.message); }
+    if(!Array.isArray(data)) throw new Error("JSON cần là một mảng các câu hỏi (array).");
+    return data.map(function(q, i){
+      if(!q.question && !q.text) throw new Error("Câu " + (i+1) + " thiếu trường 'question'.");
+      var opts = q.options || q.choices;
+      if(!Array.isArray(opts) || opts.length < 2) throw new Error("Câu " + (i+1) + " cần mảng 'options' (ít nhất 2 đáp án).");
+      var correct = q.correct;
+      if(typeof correct === "string"){
+        var idx = "ABCD".indexOf(correct.trim().toUpperCase());
+        correct = idx >= 0 ? idx : parseInt(correct, 10);
+      }
+      if(typeof correct !== "number" || isNaN(correct) || correct < 0 || correct >= opts.length){
+        throw new Error("Câu " + (i+1) + " có 'correct' không hợp lệ (dùng chỉ số 0-3 hoặc chữ A-D).");
+      }
+      return { text: q.question || q.text, options: opts, correct: correct, explanation: q.explanation || "" };
+    });
+  }
+
+  function submitJsonImport(){
+    var subject = document.getElementById("jsonSubject").value.trim();
+    var title = document.getElementById("jsonTitle").value.trim();
+    var raw = document.getElementById("jsonRaw").value;
+    if(!subject || !title){ toast("Vui lòng nhập Môn học và Tên đề."); return; }
+    var questions;
+    try{ questions = parseJsonQuestions(raw); }
+    catch(e){ toast(e.message); return; }
+    var sets = loadSets();
+    sets.push({ id: uid(), subject: subject, title: title, questions: questions, createdAt: new Date().toISOString() });
+    saveSets(sets);
+    refreshFromStore();
+    toast("Đã thêm đề \"" + title + "\" (" + questions.length + " câu).");
+    state.adminTab = "list"; render();
+  }
+
+  function newManualDraft(){
+    state.manualDraft = { subject: "", title: "", questions: [ blankQuestion() ] };
+    state.adminTab = "manual";
+    render();
+  }
+  function blankQuestion(){ return { text:"", options:["","","",""], correct:0, explanation:"" }; }
+  function manualAddQuestion(){ state.manualDraft.questions.push(blankQuestion()); render(); }
+  function manualRemoveQuestion(i){
+    state.manualDraft.questions.splice(i,1);
+    if(state.manualDraft.questions.length === 0) state.manualDraft.questions.push(blankQuestion());
+    render();
+  }
+  function readManualFormIntoDraft(){
+    var d = state.manualDraft;
+    d.subject = document.getElementById("manSubject").value.trim();
+    d.title = document.getElementById("manTitle").value.trim();
+    d.questions.forEach(function(q, i){
+      q.text = document.getElementById("mq_text_"+i).value.trim();
+      q.options = [0,1,2,3].map(function(k){ return document.getElementById("mq_opt_"+i+"_"+k).value; });
+      var radio = document.querySelector("input[name=mq_correct_"+i+"]:checked");
+      q.correct = radio ? parseInt(radio.value,10) : 0;
+      q.explanation = document.getElementById("mq_exp_"+i).value.trim();
+    });
+  }
+  function submitManual(){
+    readManualFormIntoDraft();
+    var d = state.manualDraft;
+    if(!d.subject || !d.title){ toast("Vui lòng nhập Môn học và Tên đề."); return; }
+    for(var i=0;i<d.questions.length;i++){
+      var q = d.questions[i];
+      if(!q.text || q.options.some(function(o){ return !o.trim(); })){
+        toast("Câu " + (i+1) + " chưa nhập đủ nội dung và 4 đáp án."); return;
+      }
+    }
+    var sets = loadSets();
+    sets.push({ id: uid(), subject: d.subject, title: d.title, questions: d.questions, createdAt: new Date().toISOString() });
+    saveSets(sets);
+    refreshFromStore();
+    toast("Đã thêm đề \"" + d.title + "\" (" + d.questions.length + " câu).");
+    state.manualDraft = null; state.adminTab = "list"; render();
+  }
+
+  function render(){
+    var app = document.getElementById("app");
+    app.innerHTML = renderSidebar() + '<main>' + renderMain() + '</main>';
+    wireEvents();
+  }
+
+  function navIcon(name){
+    var icons = { home:"⌂", history:"◷", admin:"✎" };
+    return icons[name] || "•";
+  }
+
+  function renderSidebar(){
+    return '' +
+    '<div class="sidebar">' +
+      '<div class="brand"><div class="mark">L</div><div class="name">Luyện Đề<small>Ôn tập & kiểm tra</small></div></div>' +
+      '<button class="navitem ' + (state.view==='home'?'active':'') + '" data-nav="home"><span class="ic">' + navIcon('home') + '</span>Trang chủ</button>' +
+      '<button class="navitem ' + (state.view==='history'?'active':'') + '" data-nav="history"><span class="ic">' + navIcon('history') + '</span>Lịch sử luyện tập</button>' +
+      '<button class="navitem ' + (state.view==='admin'?'active':'') + '" data-nav="admin"><span class="ic">' + navIcon('admin') + '</span>Quản lý ngân hàng đề</button>' +
+      '<div class="sidebar-foot studentfield">' +
+        '<label for="studentName">Tên học sinh</label>' +
+        '<input id="studentName" type="text" placeholder="VD: Bin" value="' + escapeHtml(state.student) + '">' +
+        '<p class="storenote">Dữ liệu lưu ngay trên trình duyệt này (không đồng bộ giữa các thiết bị).</p>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderMain(){
+    if(state.view === "home") return renderHome();
+    if(state.view === "quiz") return renderQuiz();
+    if(state.view === "result") return renderResult();
+    if(state.view === "history") return renderHistory();
+    if(state.view === "admin") return renderAdmin();
+    return "";
+  }
+
+  function renderHome(){
+    var groups = subjectsGrouped();
+    var subjects = Object.keys(groups);
+    var html = '<div class="pagehead">' +
+      '<p class="eyebrow">Chào ' + escapeHtml(state.student || "bạn") + '</p>' +
+      '<h1>Chọn đề để luyện tập</h1>' +
+      '<p>Chọn một đề trắc nghiệm bên dưới. Làm xong sẽ được chấm điểm ngay và lưu vào lịch sử để theo dõi tiến bộ.</p>' +
+    '</div>';
+    if(subjects.length === 0){
+      html += '<div class="empty"><div class="display">Chưa có đề nào</div><p>Vào mục "Quản lý ngân hàng đề" ở menu bên trái để thêm đề đầu tiên.</p></div>';
+      return html;
+    }
+    subjects.forEach(function(subj){
+      var sets = groups[subj];
+      html += '<div class="subject-block"><h2>' + escapeHtml(subj) + ' <span class="tag">' + sets.length + ' đề</span></h2><div class="cardgrid">';
+      sets.forEach(function(s){
+        var best = bestScoreFor(s.id);
+        var bestBadge = best === null ? '<span class="badge neutral">Chưa làm</span>' :
+          '<span class="badge ' + (best >= 0.8 ? 'good' : (best >= 0.5 ? 'neutral' : 'bad')) + '">Cao nhất ' + Math.round(best*100) + '%</span>';
+        html += '<div class="card">' +
+          '<h3>' + escapeHtml(s.title) + '</h3>' +
+          '<div class="meta"><span>' + s.questions.length + ' câu hỏi</span></div>' +
+          '<div class="cardfoot">' + bestBadge + '<button class="btn primary sm" data-start="' + s.id + '">Luyện ngay</button></div>' +
+        '</div>';
+      });
+      html += '</div></div>';
+    });
+    return html;
+  }
+
+  function renderQuiz(){
+    var set = state.sets.find(function(s){ return s.id === state.quiz.setId; });
+    if(!set){ return '<div class="empty">Không tìm thấy đề này.</div>'; }
+    var answered = Object.keys(state.quiz.answers).length;
+    var total = set.questions.length;
+    var pct = Math.round((answered/total)*100);
+    var html = '<div class="quizhead">' +
+      '<p class="eyebrow">' + escapeHtml(set.subject) + '</p>' +
+      '<h1 style="font-size:22px;margin:0 0 10px;">' + escapeHtml(set.title) + '</h1>' +
+      '<div class="progress-row"><div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+      '<span class="progress-label mono">' + answered + '/' + total + ' câu</span></div>' +
+    '</div>';
+    set.questions.forEach(function(q, qi){
+      var sel = state.quiz.answers[qi];
+      html += '<div class="qcard"><div class="qnum">CÂU ' + (qi+1) + '</div><p class="qtext">' + escapeHtml(q.text) + '</p>';
+      q.options.forEach(function(opt, oi){
+        html += '<label class="opt ' + (sel===oi?'selected':'') + '">' +
+          '<input type="radio" name="q' + qi + '" value="' + oi + '" ' + (sel===oi?'checked':'') + ' data-answer="' + qi + ':' + oi + '">' +
+          '<span class="lab">' + "ABCD"[oi] + '.</span><span>' + escapeHtml(opt) + '</span></label>';
+      });
+      html += '</div>';
+    });
+    html += '<div class="quizfoot">' +
+      '<button class="btn ghost" data-nav="home">← Về trang chủ</button>' +
+      '<button class="btn primary" data-submit-quiz>Nộp bài (' + answered + '/' + total + ')</button>' +
+    '</div>';
+    return html;
+  }
+
+  function renderResult(){
+    var r = state.result;
+    var pct = Math.round((r.score/r.total)*100);
+    var ringColor = pct>=80?"var(--good)":(pct>=50?"var(--accent)":"var(--bad)");
+    var html = '<div class="pagehead"><p class="eyebrow">Kết quả</p><h1>' + escapeHtml(r.set.title) + '</h1></div>' +
+    '<div class="scoreboard">' +
+      '<div class="scorering" style="border-color:' + ringColor + ';color:' + ringColor + '">' + pct + '%</div>' +
+      '<div class="sd"><h2>' + r.score + ' / ' + r.total + ' câu đúng</h2>' +
+      '<p>' + (pct>=80 ? "Rất tốt! Tiếp tục phát huy." : pct>=50 ? "Khá ổn — xem lại các câu sai bên dưới nhé." : "Cần luyện thêm — xem giải thích từng câu bên dưới.") + '</p></div>' +
+    '</div>';
+    r.set.questions.forEach(function(q, qi){
+      var sel = r.answers[qi];
+      var isCorrect = sel === q.correct;
+      html += '<div class="qcard"><div class="qnum">CÂU ' + (qi+1) + ' · ' + (isCorrect ? '<span style="color:var(--good)">Đúng</span>' : '<span style="color:var(--bad)">Sai</span>') + '</div>' +
+        '<p class="qtext">' + escapeHtml(q.text) + '</p>';
+      q.options.forEach(function(opt, oi){
+        var cls = "";
+        if(oi === q.correct) cls = "correct";
+        else if(oi === sel) cls = "incorrect";
+        html += '<div class="opt ' + cls + '"><span class="lab">' + "ABCD"[oi] + '.</span><span>' + escapeHtml(opt) + '</span></div>';
+      });
+      if(q.explanation){
+        html += '<div class="explain"><b>Giải thích:</b> ' + escapeHtml(q.explanation) + '</div>';
+      }
+      html += '</div>';
+    });
+    html += '<div class="quizfoot" style="border-top:none;padding-top:0;">' +
+      '<button class="btn ghost" data-nav="home">← Về trang chủ</button>' +
+      '<button class="btn primary" data-start="' + r.set.id + '">Làm lại đề này</button>' +
+    '</div>';
+    return html;
+  }
+
+  function renderHistory(){
+    var html = '<div class="pagehead"><p class="eyebrow">Theo dõi tiến bộ</p><h1>Lịch sử luyện tập</h1>' +
+      '<p>Toàn bộ các lượt làm bài đã lưu trên trình duyệt này, mới nhất trước.</p></div>';
+    if(state.attempts.length === 0){
+      html += '<div class="empty"><div class="display">Chưa có lượt làm bài nào</div><p>Hãy chọn một đề ở trang chủ để bắt đầu luyện tập.</p></div>';
+      return html;
+    }
+    html += '<div class="panel"><table><thead><tr><th>Ngày</th><th>Học sinh</th><th>Môn</th><th>Đề</th><th>Điểm</th><th>Tỉ lệ</th></tr></thead><tbody>';
+    state.attempts.forEach(function(a){
+      var pct = a.total ? Math.round((a.score/a.total)*100) : 0;
+      html += '<tr><td class="mono">' + escapeHtml(fmtDate(a.date)) + '</td>' +
+        '<td>' + escapeHtml(a.student||"") + '</td>' +
+        '<td>' + escapeHtml(a.subject||"") + '</td>' +
+        '<td>' + escapeHtml(a.title||"") + '</td>' +
+        '<td class="mono">' + a.score + '/' + a.total + '</td>' +
+        '<td><div class="histbar-wrap"><div class="histbar"><i style="width:' + pct + '%"></i></div><span class="mono">' + pct + '%</span></div></td></tr>';
+    });
+    html += '</tbody></table></div>';
+    return html;
+  }
+
+  function renderAdmin(){
+    var html = '<div class="pagehead"><p class="eyebrow">Quản trị</p><h1>Quản lý ngân hàng đề</h1>' +
+      '<p>Thêm đề mới bằng cách dán JSON (nhanh nhất nếu nhờ AI soạn sẵn câu hỏi) hoặc nhập tay từng câu.</p></div>';
+    html += '<div class="tabs">' +
+      '<button class="tab ' + (state.adminTab==='list'?'active':'') + '" data-admintab="list">Danh sách đề (' + state.sets.length + ')</button>' +
+      '<button class="tab ' + (state.adminTab==='json'?'active':'') + '" data-admintab="json">Dán JSON</button>' +
+      '<button class="tab ' + (state.adminTab==='manual'?'active':'') + '" data-admintab="manual">Nhập tay</button>' +
+    '</div>';
+    if(state.adminTab === "list"){
+      html += '<div class="panel">';
+      if(state.sets.length === 0){
+        html += '<p class="hint">Chưa có đề nào trong ngân hàng.</p>';
+      } else {
+        state.sets.forEach(function(s){
+          html += '<div class="setlist-row"><div class="sinfo">' + escapeHtml(s.title) +
+            '<small>' + escapeHtml(s.subject) + ' · ' + s.questions.length + ' câu</small></div>' +
+            '<button class="btn danger sm" data-delete-set="' + s.id + '">Xoá</button></div>';
+        });
+      }
+      html += '</div>';
+    }
+    if(state.adminTab === "json"){
+      html += '<div class="panel">' +
+        '<p class="hint">Mẹo: nhờ ChatGPT/Claude soạn câu hỏi đúng định dạng JSON dưới đây theo môn học và độ khó chị muốn, rồi dán vào đây.</p>' +
+        '<div class="row2">' +
+          '<div class="field"><label>Môn học</label><input type="text" id="jsonSubject" placeholder="VD: Vật lý, IELTS, Lịch sử..."></div>' +
+          '<div class="field"><label>Tên đề</label><input type="text" id="jsonTitle" placeholder="VD: Đề số 1 — Chương 2"></div>' +
+        '</div>' +
+        '<div class="field"><label>Nội dung JSON</label>' +
+        '<textarea id="jsonRaw" placeholder=\'' + escapeHtml('[\n  {\n    "question": "Nội dung câu hỏi?",\n    "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],\n    "correct": 1,\n    "explanation": "Vì sao B đúng (không bắt buộc)"\n  }\n]') + '"></textarea></div>' +
+        '<p class="hint"><code>correct</code> là chỉ số đáp án đúng: 0=A, 1=B, 2=C, 3=D (hoặc ghi thẳng "A"/"B"/"C"/"D").</p>' +
+        '<button class="btn primary" data-submit-json>Thêm đề vào ngân hàng</button>' +
+      '</div>';
+    }
+    if(state.adminTab === "manual"){
+      if(!state.manualDraft){ newManualDraft(); return renderAdmin(); }
+      var d = state.manualDraft;
+      html += '<div class="panel">' +
+        '<div class="row2">' +
+          '<div class="field"><label>Môn học</label><input type="text" id="manSubject" value="' + escapeHtml(d.subject) + '" placeholder="VD: Hoá học"></div>' +
+          '<div class="field"><label>Tên đề</label><input type="text" id="manTitle" value="' + escapeHtml(d.title) + '" placeholder="VD: Đề ôn chương 1"></div>' +
+        '</div>';
+      d.questions.forEach(function(q, i){
+        html += '<div class="qbuild"><div class="qbhead"><span>CÂU ' + (i+1) + '</span>' +
+          (d.questions.length>1 ? '<button class="btn ghost sm" data-remove-q="'+i+'">Xoá câu</button>' : '') + '</div>' +
+          '<div class="field"><input type="text" id="mq_text_' + i + '" value="' + escapeHtml(q.text) + '" placeholder="Nội dung câu hỏi"></div>';
+        [0,1,2,3].forEach(function(k){
+          html += '<div class="optrow"><input type="radio" name="mq_correct_' + i + '" value="' + k + '" ' + (q.correct===k?'checked':'') + '>' +
+            '<span class="lab mono">' + "ABCD"[k] + '</span>' +
+            '<input type="text" id="mq_opt_' + i + '_' + k + '" value="' + escapeHtml(q.options[k]) + '" placeholder="Đáp án ' + "ABCD"[k] + '"></div>';
+        });
+        html += '<div class="field"><label style="font-weight:400;color:var(--muted);">Giải thích (không bắt buộc)</label><input type="text" id="mq_exp_' + i + '" value="' + escapeHtml(q.explanation) + '"></div>' +
+        '</div>';
+      });
+      html += '<button class="btn ghost sm" data-add-q style="margin-bottom:16px;">+ Thêm câu hỏi</button><br>' +
+        '<button class="btn primary" data-submit-manual>Lưu đề vào ngân hàng</button>' +
+      '</div>';
+    }
+    return html;
+  }
+
+  function wireEvents(){
+    document.querySelectorAll("[data-nav]").forEach(function(el){
+      el.addEventListener("click", function(){ goto(el.getAttribute("data-nav")); });
+    });
+    document.querySelectorAll("[data-start]").forEach(function(el){
+      el.addEventListener("click", function(){ startQuiz(el.getAttribute("data-start")); });
+    });
+    var submitBtn = document.querySelector("[data-submit-quiz]");
+    if(submitBtn) submitBtn.addEventListener("click", submitQuiz);
+    document.querySelectorAll("[data-answer]").forEach(function(el){
+      el.addEventListener("change", function(){
+        var parts = el.getAttribute("data-answer").split(":");
+        selectAnswer(parseInt(parts[0],10), parseInt(parts[1],10));
+      });
+    });
+    var sName = document.getElementById("studentName");
+    if(sName){ sName.addEventListener("change", function(){ setStudent(sName.value); }); }
+    document.querySelectorAll("[data-admintab]").forEach(function(el){
+      el.addEventListener("click", function(){
+        var tab = el.getAttribute("data-admintab");
+        if(tab === "manual" && !state.manualDraft) newManualDraft();
+        state.adminTab = tab; render();
+      });
+    });
+    var jsonBtn = document.querySelector("[data-submit-json]");
+    if(jsonBtn) jsonBtn.addEventListener("click", submitJsonImport);
+    document.querySelectorAll("[data-delete-set]").forEach(function(el){
+      el.addEventListener("click", function(){ deleteSet(el.getAttribute("data-delete-set")); });
+    });
+    var addQBtn = document.querySelector("[data-add-q]");
+    if(addQBtn) addQBtn.addEventListener("click", function(){ readManualFormIntoDraft(); manualAddQuestion(); });
+    document.querySelectorAll("[data-remove-q]").forEach(function(el){
+      el.addEventListener("click", function(){ readManualFormIntoDraft(); manualRemoveQuestion(parseInt(el.getAttribute("data-remove-q"),10)); });
+    });
+    var manSubmit = document.querySelector("[data-submit-manual]");
+    if(manSubmit) manSubmit.addEventListener("click", submitManual);
+  }
+
+  ensureSeed();
+  refreshFromStore();
+  render();
+})();
+</script>
+</body>
+</html>
